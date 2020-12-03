@@ -9,7 +9,7 @@ struct Tnode_v2 {
     int height;
     T data;
     std::shared_ptr<Tnode_v2<T>> left, right, parent;
-    
+
 };
 
 template <class T>
@@ -35,9 +35,10 @@ class AVL_v2_t {
         root = nullptr;
         smallest_node = nullptr;
     }
-    /*~AVL_v2_t<T>() {
+    ~AVL_v2_t<T>() {
+        smallest_node = nullptr;
         clearTree(root);
-    }*/
+    }
     void printInorder(); //for debugging purpose only!
     void printPreorder();
     void printReverseInorder();
@@ -210,11 +211,9 @@ std::shared_ptr<Tnode_v2<T>> AVL_v2_t<T>::remove(int id, std::shared_ptr<Tnode_v
         return nullptr;
     }
     if (smallest_node->id == root->id && smallest_node->id == id) { //happens only if we have max 2 nodes in the tree...
-        if (root->right) {
-            smallest_node = root->right;
-        }
+        smallest_node = root->right;
     }
-    else if (id < root->id) {
+    if (id < root->id) {
         if (smallest_node->id == (root->left)->id && smallest_node->id == id) { //if we are about to delete the smallest node
             if (smallest_node->right) {
                 smallest_node = findMinSubTree(smallest_node->right);
@@ -251,11 +250,13 @@ std::shared_ptr<Tnode_v2<T>> AVL_v2_t<T>::remove(int id, std::shared_ptr<Tnode_v
                     root->parent = temp->parent;
                 }
             }
-            if (temp->parent->left && (temp->parent)->left->id == id) {
-                temp->parent->left = nullptr;
-            }
-            else if (temp->parent->right && (temp->parent)->right->id == id) {
-                temp->parent->right = nullptr;
+            if (temp->parent) {
+                if (temp->parent->left && (temp->parent)->left->id == id) {
+                    temp->parent->left = nullptr;
+                }
+                else if (temp->parent->right && (temp->parent)->right->id == id) {
+                    temp->parent->right = nullptr;
+                }
             }
             temp = nullptr;
         }
@@ -287,16 +288,23 @@ std::shared_ptr<Tnode_v2<T>> AVL_v2_t<T>::remove(int id, std::shared_ptr<Tnode_v
     return root;
 }
 
-/*template <class T>
+template <class T>
 void AVL_v2_t<T>::clearTree(std::shared_ptr<Tnode_v2<T>> root) {
     if (!root) {
         return;
     }
     clearTree(root->left);
     clearTree(root->right);
-    delete root;
-    root = nullptr;
-}*/
+    if (root->parent) { //if the node has a parent, disconnect it
+        root->parent = nullptr;
+    }
+    if (root->left) {
+        root->left = nullptr;
+    }
+    if (root->right) {
+        root->right = nullptr;
+    }
+}
 
 //publice functions - for the user to use
 

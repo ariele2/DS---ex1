@@ -35,7 +35,7 @@ int main() {
     auto *tmp = list1.get_head();
     while (tmp != NULL) {
         std::cout << "node id: " << tmp->id <<std::endl;
-        std::cout << " node data preorder: " <<std::endl; 
+        std::cout << " node data inorder: " <<std::endl; 
         (tmp->data).printInorder();
         std::cout << " node data preorder: " <<std::endl;
         (tmp->data).printPreorder();
@@ -43,13 +43,19 @@ int main() {
         (tmp->data).printReverseInorder();
         tmp = tmp->next;
     }
-    /*list1.remove(list1.get_tail()->prev); //should delete ido
-    list1.remove(list1.get_tail()); //should remove noam
+    list1.remove(list1.get_tail()->prev); //should delete tree4
+    list1.remove(list1.get_tail()); //should remove tree3
     std::cout << "from tail to head:" <<std::endl;
     tmp = list1.get_tail();
     while (tmp != NULL) {
-        std::cout << "node id: " << tmp->id << " node data: " << tmp->data << std::endl;
+        std::cout << "node id: " << tmp->id <<std::endl;
+        std::cout << " node data inorder: " <<std::endl; 
+        (tmp->data).printInorder();
+        std::cout << " node data preorder: " <<std::endl;
+        (tmp->data).printPreorder();
+        std::cout << " node data parent-order: "<<std::endl;
+        (tmp->data).printReverseInorder();
         tmp = tmp->prev;
-    }*/
+    }
     return 0;
 }
