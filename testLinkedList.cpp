@@ -12,9 +12,7 @@ int main() {
     AVL_v2_t<std::string> tree2;
     AVL_v2_t<std::string> tree3;
     AVL_v2_t<std::string> tree4;
-    for (int i=range-1; i>=0; i--) {
-        tree1.insert(i, "data");
-    }
+    tree1.makeTree(range, "something");
     for (int i=0; i<range; i++) {
         tree2.insert(i, "stam");
     }
@@ -27,10 +25,11 @@ int main() {
     for (int i=1; i<range*6; i+=i) {
         tree4.remove(i);
     }
-    list1.add_head(0, tree1);
+    list1.add_head(0);
+    list1.get_head()->data = tree1;
     list1.add_after(2, tree2, list1.get_tail());
     list1.add_after(20, tree3, list1.get_tail());
-    list1.add_after(8, tree4, (list1.get_tail()->prev)); 
+    list1.add_after(8, tree4, (list1.get_tail()->prev));
     std::cout << "from head to tail:" <<std::endl;
     auto *tmp = list1.get_head();
     while (tmp != NULL) {

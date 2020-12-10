@@ -1,3 +1,6 @@
+#ifndef D_LINKED_LIST_H
+#define D_LINKED_LIST_H
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <iostream>
@@ -15,7 +18,7 @@ class d_linked_list {
     ~d_linked_list() { //assume that T cleans after itself.
         destroyList(head);  
     } 
-    void add_head(int id, T &data); //only works when the list is empty - the head element shouldnt be changed.
+    void add_head(int id); //only works when the list is empty - the head element shouldnt be changed.
     void add_after(int id, T &data, node<T> *last_n);
     void remove(node<T> *to_remove);
     node<T>* get_tail() const;
@@ -33,11 +36,10 @@ void d_linked_list<T>::destroyList(node<T> *head) {
 }
 
 template <class T>
-void d_linked_list<T>::add_head(int id, T &data) {
+void d_linked_list<T>::add_head(int id) {
     if (!head) { //the list has no head, means its empty atm - head is perm, no shared_ptr needed.
         head = new node<T>;
         head->id = id;
-		head->data = data;
 		head->next = NULL;
         head->prev = NULL;
 		tail = head;
@@ -90,3 +92,4 @@ node<T>* d_linked_list<T>::get_head() const {
     return head;
 }
 
+#endif // D_LINKED_LIST_H
