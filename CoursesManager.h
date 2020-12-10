@@ -119,14 +119,16 @@ void CoursesManager::WatchClass(int courseID, int classID, int time) {
     if (!coursesData->getNode(courseID)) {
         throw Failure();
     }
-    auto curr_class_time = coursesData->getNode(courseID)->data[classID];
-    int numOfClasses = ((curr_class_time->data)->getNode(courseID)->data)->getNode(classID)->data;
+    auto deep_tree_it = coursesData->getNode(courseID)->data[0]->data->getNode(courseID)->data->begin();
+    int numOfClasses = (*deep_tree_it).data;
     if (numOfClasses < classID+1) {
         throw InvalidInput();
     }
+    auto curr_class_time = coursesData->getNode(courseID)->data[classID];
     int curr_time = curr_class_time->id;
     //go to the tree, find the course node, then go to the tree inside and remove classID from it
     curr_class_time->data->getNode(courseID)->data->remove(classID); 
+    bool needs_update = true;
     if (curr_class_time->data->getNode(courseID)->data->isEmpty()) { //after we removed the node, the tree is empty
         delete curr_class_time->data->getNode(courseID)->data; //free the allocated space
         curr_class_time->data->remove(courseID); //remove the course from the tree
@@ -140,6 +142,7 @@ void CoursesManager::WatchClass(int courseID, int classID, int time) {
                 }
                 new_max_tree->insert(classID, numOfClasses);
                 curr_class_time->data->insert(courseID, new_max_tree);
+                needs_update = false;
             }
             else {
                 auto temp = curr_class_time->prev;
@@ -148,9 +151,8 @@ void CoursesManager::WatchClass(int courseID, int classID, int time) {
             }
         }
     }
-    bool needs_update = true;
     while (curr_class_time && needs_update) { //reaches one time ahead.
-        if (!curr_class_time->next || curr_class_time->next->id > time) { //we stopped cause it doesnt exist
+        if (!curr_class_time->next || curr_class_time->next->id > time+curr_time) { //we stopped cause it doesnt exist
             AVL_v2_t<AVL_v2_t<int>*> *new_courses_tree = new AVL_v2_t<AVL_v2_t<int>*>();
             if (!new_courses_tree) {
                 throw AllocationError();
@@ -167,7 +169,7 @@ void CoursesManager::WatchClass(int courseID, int classID, int time) {
             }
             needs_update = false;
         }
-        else if (curr_class_time->next->id == time) { //if there is a cell with this time
+        else if (curr_class_time->next->id == time+curr_time) { //if there is a cell with this time
             auto courses_tree = curr_class_time->next->data->getNode(courseID);
             if (!courses_tree) { //there is no such tree for the course yet
                 AVL_v2_t<int>* new_classes_tree = new AVL_v2_t<int>();
@@ -191,11 +193,12 @@ void CoursesManager::TimeViewed(int courseID, int classID, int* timeViewed) {
     if (!coursesData->getNode(courseID)) {
         throw Failure();
     }
-    auto curr_class_time = coursesData->getNode(courseID)->data[classID];
-    int numOfClasses = ((curr_class_time->data)->getNode(courseID)->data)->getNode(classID)->data;
+    auto deep_tree_it = coursesData->getNode(courseID)->data[0]->data->getNode(courseID)->data->begin(); //iterator to the beinning of the second tree
+    int numOfClasses = (*deep_tree_it).data;
     if (numOfClasses < classID+1) {
         throw InvalidInput();
     }
+    auto curr_class_time = coursesData->getNode(courseID)->data[classID];
     *timeViewed = curr_class_time->id;
 }
 
